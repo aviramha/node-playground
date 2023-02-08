@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keepalive-serv-deployment
+  labels:
+    app: keepalive-serv
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keepalive-serv
+  template:
+    metadata:
+      labels:
+        app: keepalive-serv
+    spec:
+      containers:
+        - name: keepalive-serv
+          image: docker.io/aviramhassan/node-keepalive:server
+          imagePullPolicy: Always
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: keepalive-serv
+  name: keepalive-serv
+spec:
+  ports:
+    - port: 80
+      protocol: TCP
+      targetPort: 80
+  selector:
+    app: keepalive-serv
+  sessionAffinity: None
+  type: NodePort
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: keepalive-client-deployment
+  labels:
+    app: keepalive-client
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: keepalive-client
+  template:
+    metadata:
+      labels:
+        app: keepalive-client
+    spec:
+      containers:
+        - name: keepalive-client
+          image: docker.io/aviramhassan/node-keepalive:client
+          imagePullPolicy: Always
